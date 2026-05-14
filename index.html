@@ -1,481 +1,228 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Devis L&C GROUP</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devis L&C GROUP</title>
 
-<!-- jsPDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Bibliothèques -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-<style>
+    <style>
+        :root {
+            --blue: #2E6FD2;
+            --orange: #FF7A18;
+            --dark: #102A43;
+            --gray: #52667A;
+            --bg: #F3F7FB;
+            --card: #FFFFFF;
+            --border: #E2E8F0;
+        }
 
-:root{
-    --blue:#2E6FD2;
-    --orange:#FF7A18;
-    --dark:#102A43;
-    --gray:#52667A;
-    --bg:#F3F7FB;
-    --card:#FFFFFF;
-    --surface:#F8FBFF;
-    --border:#E2E8F0;
-}
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
+        body {
+            background: #F7F9FC;
+            color: var(--dark);
+            padding: 20px;
+            line-height: 1.5;
+        }
 
-body{
-    background: linear-gradient(180deg, #F7F9FC 0%, #E9EFF7 100%);
-    color: var(--dark);
-    padding: 24px;
-}
+        .container { max-width: 1000px; margin: auto; }
 
-.container{
-    max-width: 1100px;
-    margin: auto;
-}
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
 
-.card{
-    background: var(--card);
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    border-radius: 24px;
-    padding: 28px;
-    margin-bottom: 24px;
-    box-shadow: 0 24px 50px rgba(15, 23, 42, 0.08);
-}
+        h1 { color: var(--blue); margin-bottom: 20px; font-size: 1.8rem; }
+        h2 { color: var(--orange); margin: 25px 0 15px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
 
-.card-header{
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 18px;
-    margin-bottom: 24px;
-}
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
 
-.card-header .tag{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 16px;
-    border-radius: 999px;
-    background: #E5F1FF;
-    color: var(--blue);
-    font-size: 0.88rem;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-}
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--gray); font-size: 0.9rem; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+        }
 
-h1{
-    color: var(--blue);
-    font-size: 2rem;
-}
+        button {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
 
-h2{
-    color: var(--orange);
-    margin: 28px 0 16px;
-    font-size: 1.15rem;
-}
+        .btn-blue { background: var(--blue); color: white; width: 100%; }
+        .btn-orange { background: var(--orange); color: white; width: 100%; font-size: 1.1rem; }
+        .btn-red { background: #ff4d4d; color: white; padding: 5px 10px; font-size: 0.8rem; }
+        
+        button:hover { opacity: 0.8; transform: translateY(-1px); }
 
-label{
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 700;
-    color: var(--gray);
-    font-size: 0.95rem;
-}
+        .table-responsive { width: 100%; overflow-x: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; background: white; min-width: 600px; }
+        th { background: var(--blue); color: white; text-align: left; padding: 12px; font-size: 0.9rem; }
+        td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
 
-input{
-    width: 100%;
-    padding: 14px 16px;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    background: #FFF;
-    color: var(--dark);
-    transition: all 0.2s ease;
-}
+        #facture { 
+            padding: 40px; 
+            background: white;
+            color: #000;
+        }
+        
+        .pdf-mode {
+            width: 800px !important; 
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: -10;
+        }
 
-input:focus{
-    outline: none;
-    border-color: var(--blue);
-    box-shadow: 0 0 0 4px rgba(46, 111, 210, 0.12);
-}
+        .resume {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border-left: 5px solid var(--blue);
+        }
 
-.grid{
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 18px;
-}
+        .row-total { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .big { font-size: 1.3rem; font-weight: 800; color: var(--blue); margin-top: 10px; border-top: 2px solid #ddd; padding-top: 10px; }
 
-button{
-    border: none;
-    padding: 14px 22px;
-    border-radius: 14px;
-    cursor: pointer;
-    font-weight: 700;
-    transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
-}
+        .hidden { display: none; }
 
-button:hover{
-    transform: translateY(-1px);
-    box-shadow: 0 16px 30px rgba(46, 111, 210, 0.16);
-}
+        .facture-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 3px solid var(--blue);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
 
-.btn-blue{
-    background: var(--blue);
-    color: white;
-}
+        .info-box {
+            background: #F1F6FF;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--blue);
+            font-size: 0.85rem;
+            margin-top: 15px;
+            color: var(--dark);
+        }
 
-.btn-orange{
-    background: var(--orange);
-    color: white;
-}
+        .securisation-message {
+            background: #fff3e6;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--orange);
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
 
-table{
-    width: 100%;
-    min-width: 700px;
-    border-collapse: collapse;
-    margin-top: 18px;
-    border-radius: 18px;
-    overflow: hidden;
-    background: #FFF;
-    box-shadow: inset 0 0 0 1px rgba(226, 232, 240, 0.9);
-}
-
-.table-responsive{
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-.table-responsive table{
-    min-width: 700px;
-}
-
-table th{
-    color: white;
-    background: var(--blue);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    font-size: 0.9rem;
-}
-
-table th,
-table td{
-    padding: 16px 18px;
-    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
-    text-align: left;
-}
-
-table tbody tr:last-child td{
-    border-bottom: none;
-}
-
-table tbody tr:nth-child(even){
-    background: #F8FBFF;
-}
-
-.resume{
-    background: var(--surface);
-    padding: 22px;
-    border-radius: 18px;
-    margin-top: 20px;
-    border-left: 5px solid var(--blue);
-}
-
-.row-total{
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 14px;
-    flex-wrap: wrap;
-}
-
-.row-total span{
-    color: var(--gray);
-}
-.row-total.big{
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--dark);
-}
-
-.securisation-message{
-    background: linear-gradient(135deg, #E5F1FF 0%, #F8FBFF 100%);
-    border-left: 5px solid var(--orange);
-    color: var(--dark);
-}
-.securisation-message-merci{
-    background: linear-gradient(135deg, #E5F1FF 0%, #F8FBFF 100%);
-    border-left: 5px solid var(--orange);
-    border-right: 5px solid var(--orange);
-    color: var(--dark);
-}
-
-.securisation-message p{
-    margin: 0 0 8px 0;
-    line-height: 1.5;
-}
-
-.securisation-message p:last-child{
-    margin-bottom: 0;
-}
-
-.hidden{
-    display: none;
-}
-
-.section-title{
-    margin-top: 30px;
-    margin-bottom: 14px;
-    color: var(--orange);
-    font-size: 1rem;
-    letter-spacing: 0.04em;
-    font-weight: 800;
-}
-
-.facture-header{
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 18px;
-    margin-bottom: 24px;
-}
-
-.invoice-title{
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: var(--blue);
-}
-
-.invoice-meta{
-    display: flex;
-    gap: 18px;
-    flex-wrap: wrap;
-    color: var(--gray);
-    font-size: 0.95rem;
-}
-
-.company-brand{
-    text-align: right;
-    min-width: 220px;
-}
-
-.company-name{
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: var(--blue);
-}
-
-.company-tag{
-    margin-top: 6px;
-    color: var(--gray);
-}
-
-@media (max-width: 760px) {
-    .card{
-        padding: 22px;
-    }
-
-    .card-header,
-    .facture-header{
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .company-brand{
-        text-align: left;
-    }
-
-    table th,
-    table td{
-        padding: 14px 12px;
-    }
-}
-
-</style>
+        @media (max-width: 600px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
 
 <div class="container">
-
-    <!-- FORMULAIRE -->
-    <div class="card">
-
-        <div class="facture-header">
-            <div>
-                <h1>Création de Devis</h1>
-            </div>
-            <div class="company-brand">
-                <div class="company-name">L&C GROUP</div>
-                <div class="company-tag">Leaders & Creators</div>
-            </div>
-        </div>
-        <br>
-
+    <!-- FORMULAIRE DE SAISIE -->
+    <div class="card" id="form-container">
+        <h1>Création de Devis</h1>
+        
         <div class="grid">
-
-            <div>
-                <label>Projet</label>
-                <input type="text" id="projet">
-            </div>
-
-            <div>
-                <label>Nom du client</label>
-                <input type="text" id="client">
-            </div>
-
-            <div>
-                <label>Numéro du client</label>
-                <input type="text" id="num_client">
-            </div>
-
-            <div>
-                <label>Nom de l'agent</label>
-                <input type="text" id="agent">
-            </div>
-
-            <div>
-                <label>Numéro de l'agent</label>
-                <input type="text" id="num_agent">
-            </div>
-
+            <div><label>Projet</label><input type="text" id="projet" placeholder="ex: Importation Électronique"></div>
+            <div><label>Nom du client</label><input type="text" id="client"></div>
+            <div><label>Numéro client</label><input type="text" id="num_client"></div>
+            <div><label>Nom de l'agent</label><input type="text" id="agent"></div>
+            <div><label>Numéro de l'agent</label><input type="text" id="num_agent"></div>
         </div>
 
-        <h2>Produit(s)</h2>
-
+        <h2>Ajouter des Produits</h2>
         <div class="grid">
-
-            <div>
-                <label>Nom du produit</label>
-                <input type="text" id="produit">
-            </div>
-
-            <div>
-                <label>Description</label>
-                <input type="text" id="description">
-            </div>
-
-            <div>
-                <label>Quantité</label>
-                <input type="number" id="quantite">
-            </div>
-
-            <div>
-                <label>Prix unitaire</label>
-                <input type="number" id="prix">
-            </div>
-
+            <div><label>Produit</label><input type="text" id="produit"></div>
+            <div><label>Description</label><input type="text" id="description"></div>
+            <div><label>Quantité</label><input type="number" id="quantite" value="1"></div>
+            <div><label>Prix Unitaire (F)</label><input type="number" id="prix"></div>
         </div>
-
-        <br>
-
-        <button class="btn-blue" onclick="ajouterProduit()">
-            Ajouter un autre produit
-        </button>
+        <button class="btn-blue" onclick="ajouterProduit()">+ Ajouter au devis</button>
 
         <div class="table-responsive">
             <table id="tableProduits">
-
                 <thead>
                     <tr>
                         <th>Produit</th>
-                        <th>Description</th>
                         <th>Quantité</th>
-                        <th>Prix Unitaire</th>
+                        <th>Prix Unit.</th>
                         <th>Total</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
-
                 <tbody></tbody>
-
             </table>
         </div>
 
-        <h2>Sécurisation & Service</h2>
-
+        <h2>Frais & Transport</h2>
         <div class="grid">
-
-            <div>
-                <label>Commission (%)</label>
-                <input type="number" id="commission" value="15">
-            </div>
-
-            <div>
-                <label>Frais vérification / inspection</label>
-                <input type="number" id="inspection" value="0">
-            </div>
-
+            <div><label>Commission (%)</label><input type="number" id="commission" value="15"></div>
+            <div><label>Inspection (F)</label><input type="number" id="inspection" value="0"></div>
+            <div><label>Kilos Estimatifs</label><input type="number" id="kilos" value="0"></div>
+            <div><label>Prix / Kilo (F)</label><input type="number" id="prixKilo" value="0"></div>
         </div>
 
-        <h2> Estimation Transport Avion</h2>
-
-        <div class="grid">
-
-            <div>
-                <label>Nombre de kilos estimatif</label>
-                <input type="number" id="kilos" value="0">
-            </div>
-
-            <div>
-                <label>Prix du kilo</label>
-                <input type="number" id="prixKilo" value="0">
-            </div>
-
-        </div>
-
-        <br>
-
-        <button class="btn-orange" onclick="genererFacture()">
-            Générer la facture
-        </button>
-
+        <button class="btn-orange" style="margin-top:30px" onclick="genererFacture()">Visualiser et Générer le PDF</button>
     </div>
 
-    <!-- FACTURE -->
+    <!-- ZONE DE LA FACTURE -->
     <div class="card hidden" id="facture">
-
         <div class="facture-header">
             <div>
-                <div class="invoice-title">Devis</div>
-                <div class="footer-note">
-                    Honnêteté • Intégrité • Témérité
-                </div>
-                <div class="invoice-meta">
-                    <span>Devis n° <strong id="invoiceNumber"></strong></span>
-                    <span>Date : <strong id="invoiceDate"></strong></span>
-                </div>
-                
+                <h1 style="margin-bottom:5px">DEVIS</h1>
+                <p>N° <span id="vNumero"></span></p>
+                <p>Date: <span id="vDate"></span></p>
             </div>
-            <div class="company-brand">
-                <div class="company-name">L&C GROUP</div>
-                <div class="company-tag">Leaders & Creators</div>
-                 
+            <div style="text-align: right">
+                <h2 style="color:var(--blue); margin:0">L&C GROUP</h2>
+                <p>Leaders & Creators</p>
+                <p>Brazzaville, Congo</p>
             </div>
         </div>
 
-        <div class="section-title">Informations Client</div>
-
-        <p><b>Projet :</b> <span id="vProjet"></span></p>
-        <p><b>Client :</b> <span id="vClient"></span></p>
-        <p><b>Numéro Client :</b> <span id="vnum_Client"></span></p>
-        <p><b>Agent :</b> <span id="vAgent"></span></p>
-        <p><b>Numéro Agent :</b> <span id="vnum_Agent"></span></p>
-
-        <div class="section-title">
-            Produits & Services
+        <div class="grid">
+            <div>
+                <strong>CLIENT</strong>
+                <p id="vClient"></p>
+                <p id="vNumClient"></p>
+            </div>
+            <div>
+                <strong>PROJET</strong>
+                <p id="vProjet"></p>
+            </div>
+            <div style="text-align: right">
+                <strong>AGENT</strong>
+                <p id="vAgent"></p>
+                <p id="vNumAgent"></p>
+            </div>
         </div>
 
         <div class="table-responsive">
             <table>
-
                 <thead>
                     <tr>
                         <th>Produit</th>
@@ -485,308 +232,142 @@ table tbody tr:nth-child(even){
                         <th>Total</th>
                     </tr>
                 </thead>
-
                 <tbody id="factureProduits"></tbody>
-
             </table>
         </div>
 
         <div class="resume">
-
-            <div class="row-total">
-                <span>Facture totale d'achat :</span>
-                <span id="achatTotal"></span>
-            </div>
-
-            <div class="row-total">
-                <span>Commission :</span>
-                <span id="commissionTotal"></span>
-            </div>
-
-            <div class="row-total">
-                <span>Frais vérification / inspection :</span>
-                <span id="inspectionTotal"></span>
-            </div>
-
-            <hr><br>
-
-            <div class="row-total big">
-                <span>Total à payer pour l'achat :</span>
-                <span id="premierePartie"></span>
-            </div>
-
+            <div class="row-total"><span>Sous-total Achat :</span><span id="vSousTotal"></span></div>
+            <div class="row-total"><span>Commission Service :</span><span id="vCommission"></span></div>
+            <div class="row-total"><span>Frais Inspection :</span><span id="vInspection"></span></div>
+            <div class="row-total big"><span>TOTAL À PAYER (ACHAT) :</span><span id="vTotalAchat"></span></div>
         </div>
 
-        <div class="section-title">
-            Estimation Transport Avion
-        </div>
-
+        <h2 style="margin-top:30px">Estimation Transport</h2>
         <div class="resume">
-
-            <div class="row-total">
-                <span>Kilos estimatifs :</span>
-                <span id="kgTotal"></span>
-            </div>
-
-            <div class="row-total">
-                <span>Prix du kilo :</span>
-                <span id="prixKgTotal"></span>
-            </div>
-
-            <hr><br>
-
-            <div class="row-total big">
-                <span>Total Transport à l'arrivée :</span>
-                <span id="transportTotal"></span>
-            </div>
-
-        </div>
-
-        <div class="section-title">Sécurisation L&C GROUP</div>
-
-        <div class="resume securisation-message">
-            <p><strong>LE PROTOCOLE L&C GROUP :</strong></p>
-            <p>Notre agent en Chine vérifie physiquement chaque produit avant l'expédition. Si un défaut est détecté, nous renvoyons le produit à l'usine immédiatement.</p>
-        </div>
-
-        <br>
-
-        <div class="resume securisation-message-merci">
-            <p style="text-align: center;"><strong>L&C GROUP vous remercie pour votre confiance</strong></p>
-            <br>
-            <div class="footer-note" style="text-align: center;">
-                 L&C Group - Brazzaville, Congo
+            <div class="row-total"><span>Poids estimé :</span><span id="vPoids"></span></div>
+            <div class="row-total"><span>Prix au kilo :</span><span id="vPrixKilo"></span></div>
+            <div class="row-total big" style="color:var(--orange)"><span>TOTAL TRANSPORT (À L'ARRIVÉE) :</span><span id="vTotalTransport"></span></div>
+            
+            <!-- AJOUT DU MESSAGE D'INFORMATION TRANSPORT -->
+            <div class="info-box">
+                <strong>💡 INFORMATION IMPORTANTE :</strong><br>
+                Le prix du kilo indiqué ci-dessus est <u>estimatif</u>. 
+                Pour notre <strong>tarif standard de 9 500 F / kg</strong>, la durée de livraison est estimée entre <strong>3 à 4 semaines</strong> après expédition.
             </div>
         </div>
 
-        <br>
+        <div class="securisation-message">
+            <strong>PROTOCOLE DE SÉCURITÉ L&C GROUP :</strong><br>
+            Chaque article est inspecté physiquement par nos agents en Chine avant expédition. En cas de non-conformité, le retour usine est immédiat.
+        </div>
 
-        <button class="btn-orange" onclick="telechargerPDF()">
-            Télécharger le PDF
-        </button>
-
+        <div style="text-align: center; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+            <p><i>Honnêteté • Intégrité • Témérité</i></p>
+            <button class="btn-orange" id="btnDownload" onclick="telechargerPDF()" style="width:auto; padding: 12px 40px;">Télécharger le PDF officiel</button>
+        </div>
     </div>
-
 </div>
 
 <script>
+    let produits = [];
 
-let produits = [];
+    function format(n) { return Number(n).toLocaleString("fr-FR") + " F"; }
 
-function ajouterProduit(){
+    function ajouterProduit() {
+        const nom = document.getElementById("produit").value;
+        const desc = document.getElementById("description").value;
+        const qte = parseFloat(document.getElementById("quantite").value);
+        const prix = parseFloat(document.getElementById("prix").value);
 
-    const produit = document.getElementById("produit").value;
-    const description = document.getElementById("description").value;
-    const quantite = parseFloat(document.getElementById("quantite").value);
-    const prix = parseFloat(document.getElementById("prix").value);
+        if (!nom || !prix) return alert("Nom et Prix requis");
 
-    if(!produit || !description || !quantite || !prix){
-        alert("Veuillez remplir tous les champs produit.");
-        return;
+        produits.push({ nom, desc, qte, prix, total: qte * prix });
+        document.getElementById("produit").value = "";
+        document.getElementById("description").value = "";
+        document.getElementById("prix").value = "";
+        majTableauSaisie();
     }
 
-    const total = quantite * prix;
-
-    produits.push({
-        produit,
-        description,
-        quantite,
-        prix,
-        total
-    });
-
-    afficherProduits();
-
-    document.getElementById("produit").value = "";
-    document.getElementById("description").value = "";
-    document.getElementById("quantite").value = "";
-    document.getElementById("prix").value = "";
-}
-
-function afficherProduits(){
-
-    const tbody = document.querySelector("#tableProduits tbody");
-
-    tbody.innerHTML = "";
-
-    produits.forEach(item => {
-
-        tbody.innerHTML += `
-            <tr>
-                <td>${item.produit}</td>
-                <td>${item.description}</td>
-                <td>${item.quantite}</td>
-                <td>${format(item.prix)} F</td>
-                <td>${format(item.total)} F</td>
-            </tr>
-        `;
-    });
-}
-
-function genererFacture(){
-
-    if(produits.length === 0){
-        alert("Ajoutez au moins un produit.");
-        return;
+    function supprimerProduit(index) {
+        produits.splice(index, 1);
+        majTableauSaisie();
     }
 
-    const projet = document.getElementById("projet").value;
-    const client = document.getElementById("client").value;
-    const num_client = document.getElementById("num_client").value;
-    const agent = document.getElementById("agent").value;
-    const num_agent = document.getElementById("num_agent").value;
-
-    const commissionPourcent =
-        parseFloat(document.getElementById("commission").value);
-
-    const inspection =
-        parseFloat(document.getElementById("inspection").value);
-
-    const kilos =
-        parseFloat(document.getElementById("kilos").value);
-
-    const prixKilo =
-        parseFloat(document.getElementById("prixKilo").value);
-
-    // TOTAL PRODUITS
-    const achat =
-        produits.reduce((sum, p) => sum + p.total, 0);
-
-    // COMMISSION
-    const commission =
-        achat * (commissionPourcent / 100);
-
-    // TOTAL PREMIERE PARTIE
-    const premierePartie =
-        achat + commission + inspection;
-
-    // TRANSPORT
-    const transport =
-        kilos * prixKilo;
-
-    // INFOS
-    document.getElementById("vProjet").innerText = projet;
-    document.getElementById("vClient").innerText = client;
-    document.getElementById("vnum_Client").innerText = num_client;
-    document.getElementById("vAgent").innerText = agent;
-    document.getElementById("vnum_Agent").innerText = num_agent;
-    document.getElementById("invoiceNumber").innerText = "DEV" + String(Date.now()).slice(-6);
-    document.getElementById("invoiceDate").innerText = new Date().toLocaleDateString("fr-FR");
-
-    // TABLE PRODUITS
-    const factureProduits =
-        document.getElementById("factureProduits");
-
-    factureProduits.innerHTML = "";
-
-    produits.forEach(item => {
-
-        factureProduits.innerHTML += `
+    function majTableauSaisie() {
+        const tbody = document.querySelector("#tableProduits tbody");
+        tbody.innerHTML = produits.map((p, i) => `
             <tr>
-                <td>${item.produit}</td>
-                <td>${item.description}</td>
-                <td>${item.quantite}</td>
-                <td>${format(item.prix)} F</td>
-                <td>${format(item.total)} F</td>
+                <td>${p.nom}</td>
+                <td>${p.qte}</td>
+                <td>${format(p.prix)}</td>
+                <td>${format(p.total)}</td>
+                <td><button class="btn-red" onclick="supprimerProduit(${i})">X</button></td>
             </tr>
-        `;
-    });
+        `).join('');
+    }
 
-    // TOTAUX
-    document.getElementById("achatTotal").innerText =
-        format(achat) + " F";
+    function genererFacture() {
+        if (produits.length === 0) return alert("Ajoutez au moins un produit");
 
-    document.getElementById("commissionTotal").innerText =
-        format(commission) + " F";
+        document.getElementById("vProjet").innerText = document.getElementById("projet").value;
+        document.getElementById("vClient").innerText = document.getElementById("client").value;
+        document.getElementById("vNumClient").innerText = document.getElementById("num_client").value;
+        document.getElementById("vAgent").innerText = document.getElementById("agent").value;
+        document.getElementById("vNumAgent").innerText = document.getElementById("num_agent").value;
+        document.getElementById("vDate").innerText = new Date().toLocaleDateString("fr-FR");
+        document.getElementById("vNumero").innerText = "DEV-" + Math.floor(Math.random() * 9000 + 1000);
 
-    document.getElementById("inspectionTotal").innerText =
-        format(inspection) + " F";
+        const sousTotal = produits.reduce((sum, p) => sum + p.total, 0);
+        const comm = sousTotal * (parseFloat(document.getElementById("commission").value) / 100);
+        const insp = parseFloat(document.getElementById("inspection").value);
+        const transport = parseFloat(document.getElementById("kilos").value) * parseFloat(document.getElementById("prixKilo").value);
 
-    document.getElementById("premierePartie").innerText =
-        format(premierePartie) + " F";
+        document.getElementById("factureProduits").innerHTML = produits.map(p => `
+            <tr>
+                <td><b>${p.nom}</b></td>
+                <td>${p.desc}</td>
+                <td>${p.qte}</td>
+                <td>${format(p.prix)}</td>
+                <td>${format(p.total)}</td>
+            </tr>
+        `).join('');
 
-    document.getElementById("kgTotal").innerText =
-        kilos + " kg";
+        document.getElementById("vSousTotal").innerText = format(sousTotal);
+        document.getElementById("vCommission").innerText = format(comm);
+        document.getElementById("vInspection").innerText = format(insp);
+        document.getElementById("vTotalAchat").innerText = format(sousTotal + comm + insp);
+        document.getElementById("vPoids").innerText = document.getElementById("kilos").value + " kg";
+        document.getElementById("vPrixKilo").innerText = format(document.getElementById("prixKilo").value);
+        document.getElementById("vTotalTransport").innerText = format(transport);
 
-    document.getElementById("prixKgTotal").innerText =
-        format(prixKilo) + " F";
+        document.getElementById("facture").classList.remove("hidden");
+        document.getElementById("facture").scrollIntoView({ behavior: 'smooth' });
+    }
 
-    document.getElementById("transportTotal").innerText =
-        format(transport) + " F";
+    async function telechargerPDF() {
+        const btn = document.getElementById("btnDownload");
+        const facture = document.getElementById("facture");
+        btn.style.display = "none";
+        facture.classList.add("pdf-mode");
 
-    document.getElementById("facture").classList.remove("hidden");
-}
+        try {
+            const canvas = await html2canvas(facture, { scale: 2, useCORS: true, windowWidth: 800 });
+            const imgData = canvas.toDataURL("image/jpeg", 0.98);
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-function telechargerPDF(){
-    const facture = document.getElementById("facture");
-    const clone = facture.cloneNode(true);
-    clone.style.position = "absolute";
-    clone.style.left = "-9999px";
-    clone.style.top = "0";
-    clone.style.display = "block";
-    clone.style.width = facture.getBoundingClientRect().width + "px";
-
-    clone.querySelectorAll("button").forEach(button => {
-        button.style.display = "none";
-    });
-
-    document.body.appendChild(clone);
-
-    html2canvas(clone, {
-        scale: 2,
-        backgroundColor: "#ffffff",
-        useCORS: true,
-        scrollY: -window.scrollY
-    }).then(canvas => {
-        const imgData = canvas.toDataURL("image/png");
-        const jsPDFConstructor = window.jspdf && window.jspdf.jsPDF ? window.jspdf.jsPDF : window.jsPDF;
-        if (!jsPDFConstructor) {
-            document.body.removeChild(clone);
-            alert("Erreur lors de la génération du PDF : jsPDF n'est pas chargé.");
-            return;
+            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`Devis_LC_GROUP.pdf`);
+        } catch (e) {
+            alert("Erreur génération PDF");
+        } finally {
+            facture.classList.remove("pdf-mode");
+            btn.style.display = "inline-block";
         }
-        const pdf = new jsPDFConstructor({ unit: "pt", format: "a4" });
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const imgWidth = pageWidth - 40;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        let position = 20;
-
-        if (imgHeight <= pageHeight - 40) {
-            pdf.addImage(imgData, "PNG", 20, position, imgWidth, imgHeight);
-        } else {
-            let remainingHeight = imgHeight;
-            let sourceY = 0;
-            const ratio = canvas.width / imgWidth;
-            while (remainingHeight > 0) {
-                const pageCanvas = document.createElement("canvas");
-                pageCanvas.width = canvas.width;
-                pageCanvas.height = Math.min((pageHeight - 40) * ratio, canvas.height - sourceY);
-                const ctx = pageCanvas.getContext("2d");
-                ctx.drawImage(canvas, 0, sourceY, canvas.width, pageCanvas.height, 0, 0, canvas.width, pageCanvas.height);
-                const pageData = pageCanvas.toDataURL("image/png");
-                pdf.addImage(pageData, "PNG", 20, 20, imgWidth, (pageCanvas.height / canvas.width) * imgWidth);
-                remainingHeight -= pageCanvas.height;
-                sourceY += pageCanvas.height;
-                if (remainingHeight > 0) {
-                    pdf.addPage();
-                }
-            }
-        }
-
-        pdf.save("devis-lc-group.pdf");
-        document.body.removeChild(clone);
-    }).catch(error => {
-        document.body.removeChild(clone);
-        alert("Erreur lors de la génération du PDF : " + (error.message || error));
-    });
-}
-
-function format(nombre){
-
-    return Number(nombre).toLocaleString("fr-FR");
-}
-
+    }
 </script>
 
 </body>
