@@ -44,9 +44,10 @@
         .btn-orange { background: var(--orange); color: white; padding: 15px; font-size: 1.1rem; width: 100%; }
         .btn-red { background: #ff4d4d; color: white; padding: 5px 10px; font-size: 0.8rem; }
 
-        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9rem; }
-        th { background: var(--blue); color: white; text-align: left; padding: 10px; }
-        td { padding: 10px; border-bottom: 1px solid var(--border); }
+        .table-responsive { width: 100%; overflow-x: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; background: white; min-width: 600px; }
+        th { background: var(--blue); color: white; text-align: left; padding: 12px; font-size: 0.9rem; }
+        td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
 
         /* --- Style du Devis --- */
         #facture { background: white; padding: 30px; color: #000; border-radius: 8px; }
@@ -121,10 +122,12 @@
         </div>
         <button class="btn-blue" onclick="ajouterProduit()">+ Ajouter l'article</button>
 
-        <table id="tableSaisie">
-            <thead><tr><th>Article</th><th>Détails</th><th>Qté</th><th>Total</th><th>Action</th></tr></thead>
-            <tbody></tbody>
-        </table>
+        <div class="table-responsive">
+            <table id="tableSaisie">
+                <thead><tr><th>Article</th><th>Détails</th><th>Qté</th><th>Total</th><th>Action</th></tr></thead>
+                <tbody></tbody>
+            </table>
+         </div>
 
         <h2>Frais</h2>
         <div class="grid">
@@ -161,10 +164,12 @@
                 <div style="text-align: right"><strong>AGENT</strong><p id="vAgent"></p><p id="vNumAgent"></p></div>
             </div>
 
-            <table>
-                <thead><tr><th>Article</th><th>Détails</th><th>Qté</th><th>Prix Unit.</th><th>Total</th></tr></thead>
-                <tbody id="vBody"></tbody>
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <thead><tr><th>Article</th><th>Détails</th><th>Qté</th><th>Prix Unit.</th><th>Total</th></tr></thead>
+                    <tbody id="vBody"></tbody>
+                </table>
+            </div>
 
             <div class="resume">
                 <div class="row-total"><span>Sous-total Achat :</span><span id="vSousTotal"></span></div>
