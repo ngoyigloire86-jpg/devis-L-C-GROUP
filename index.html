@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Devis L&C GROUP</title>
 
-    <!-- Bibliothèques -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
     <style>
         :root {
             --blue: #2E6FD2;
@@ -18,124 +14,87 @@
             --bg: #F3F7FB;
             --card: #FFFFFF;
             --border: #E2E8F0;
+            --whatsapp: #25D366;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
-        body {
-            background: #F7F9FC;
-            color: var(--dark);
-            padding: 20px;
-            line-height: 1.5;
-        }
+        body { background: var(--bg); color: var(--dark); padding: 15px; line-height: 1.5; }
+        .container { max-width: 850px; margin: auto; }
 
-        .container { max-width: 1000px; margin: auto; }
-
+        /* --- Interface de saisie --- */
         .card {
             background: var(--card);
             border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.05);
             border: 1px solid var(--border);
         }
 
-        h1 { color: var(--blue); margin-bottom: 20px; font-size: 1.8rem; }
-        h2 { color: var(--orange); margin: 25px 0 15px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
+        h1 { color: var(--blue); margin-bottom: 15px; font-size: 1.6rem; }
+        h2 { color: var(--orange); margin: 20px 0 10px; font-size: 1rem; text-transform: uppercase; }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
-        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--gray); font-size: 0.85rem; }
+        input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; }
 
-        label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--gray); font-size: 0.9rem; }
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            font-size: 1rem;
-        }
-
-        button {
-            border: none;
-            padding: 12px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 700;
-            transition: 0.3s;
-            margin-top: 10px;
-        }
-
+        button { border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; transition: 0.3s; }
         .btn-blue { background: var(--blue); color: white; width: 100%; }
-        .btn-orange { background: var(--orange); color: white; width: 100%; font-size: 1.1rem; }
+        .btn-orange { background: var(--orange); color: white; padding: 15px; font-size: 1.1rem; width: 100%; }
         .btn-red { background: #ff4d4d; color: white; padding: 5px 10px; font-size: 0.8rem; }
+
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9rem; }
+        th { background: var(--blue); color: white; text-align: left; padding: 10px; }
+        td { padding: 10px; border-bottom: 1px solid var(--border); }
+
+        /* --- Style du Devis --- */
+        #facture { background: white; padding: 30px; color: #000; border-radius: 8px; }
+        .facture-header { display: flex; justify-content: space-between; border-bottom: 3px solid var(--blue); padding-bottom: 15px; margin-bottom: 25px; }
         
-        button:hover { opacity: 0.8; transform: translateY(-1px); }
-
-        .table-responsive { width: 100%; overflow-x: auto; margin-top: 20px; }
-        table { width: 100%; border-collapse: collapse; background: white; min-width: 600px; }
-        th { background: var(--blue); color: white; text-align: left; padding: 12px; font-size: 0.9rem; }
-        td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-
-        #facture { 
-            padding: 40px; 
-            background: white;
-            color: #000;
-        }
+        .resume { background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 15px; border-left: 5px solid var(--blue); }
+        .row-total { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .big { font-size: 1.2rem; font-weight: 800; color: var(--blue); border-top: 2px solid #ddd; padding-top: 10px; margin-top: 5px; }
         
-        .pdf-mode {
-            width: 800px !important; 
-            position: absolute;
-            left: 0;
-            top: 0;
-            z-index: -10;
+        .info-box { background: #F1F6FF; padding: 12px; border-radius: 8px; border: 1px solid var(--blue); font-size: 0.8rem; margin-top: 15px; }
+        .securisation-message { background: #fff3e6; padding: 12px; border-radius: 8px; border: 1px solid var(--orange); margin-top: 15px; font-size: 0.85rem; }
+        
+        /* Section Remerciement & WhatsApp */
+        .thanks-section { 
+            text-align: center; 
+            margin-top: 30px; 
+            padding: 25px; 
+            border-top: 1px dashed #ccc;
+            background-color: #fdfdfd;
+            border-radius: 0 0 16px 16px;
         }
-
-        .resume {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-            border-left: 5px solid var(--blue);
+        .whatsapp-btn { 
+            display: inline-block; 
+            background: var(--whatsapp); 
+            color: white !important; 
+            text-decoration: none; 
+            padding: 12px 30px; 
+            border-radius: 50px; 
+            font-weight: bold; 
+            margin-top: 15px;
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2);
         }
-
-        .row-total { display: flex; justify-content: space-between; margin-bottom: 8px; }
-        .big { font-size: 1.3rem; font-weight: 800; color: var(--blue); margin-top: 10px; border-top: 2px solid #ddd; padding-top: 10px; }
 
         .hidden { display: none; }
 
-        .facture-header {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 3px solid var(--blue);
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-
-        .info-box {
-            background: #F1F6FF;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid var(--blue);
-            font-size: 0.85rem;
-            margin-top: 15px;
-            color: var(--dark);
-        }
-
-        .securisation-message {
-            background: #fff3e6;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid var(--orange);
-            font-size: 0.9rem;
-            margin-top: 20px;
-        }
-
-        @media (max-width: 600px) {
-            .grid { grid-template-columns: 1fr; }
+        /* --- CONFIGURATION POUR L'IMPRESSION --- */
+        @media print {
+            body { background: white; padding: 0; }
+            .no-print { display: none !important; }
+            .container { max-width: 100%; margin: 0; }
+            .card { box-shadow: none; border: none; padding: 0; }
+            #facture { padding: 10mm; }
+            .resume, .securisation-message, .thanks-section, tr { page-break-inside: avoid; }
+            .whatsapp-btn { 
+                border: 2px solid var(--whatsapp); 
+                color: #25D366 !important;
+                text-decoration: none;
+            }
         }
     </style>
 </head>
@@ -143,189 +102,176 @@
 
 <div class="container">
     <!-- FORMULAIRE DE SAISIE -->
-    <div class="card" id="form-container">
-        <h1>Création de Devis</h1>
-        
+    <div class="card no-print" id="form-container">
+        <h1>Création de Devis L&C Group</h1>
         <div class="grid">
-            <div><label>Projet</label><input type="text" id="projet" placeholder="ex: Importation Électronique"></div>
-            <div><label>Nom du client</label><input type="text" id="client"></div>
-            <div><label>Numéro client</label><input type="text" id="num_client"></div>
-            <div><label>Nom de l'agent</label><input type="text" id="agent"></div>
-            <div><label>Numéro de l'agent</label><input type="text" id="num_agent"></div>
+            <div><label>Projet</label><input type="text" id="projet" placeholder="ex: Import iPhone"></div>
+            <div><label>Client</label><input type="text" id="client" placeholder="Nom"></div>
+            <div><label>Numéro Client</label><input type="text" id="num_client" value="242"></div>
+            <div><label>Agent en charge</label><input type="text" id="agent"></div>
+            <div><label>Numéro WhatsApp Agent</label><input type="text" id="num_agent" value="242"></div>
         </div>
 
-        <h2>Ajouter des Produits</h2>
+        <h2>Articles</h2>
         <div class="grid">
-            <div><label>Produit</label><input type="text" id="produit"></div>
-            <div><label>Description</label><input type="text" id="description"></div>
-            <div><label>Quantité</label><input type="number" id="quantite" value="1"></div>
-            <div><label>Prix Unitaire (F)</label><input type="number" id="prix"></div>
+            <input type="text" id="produit" placeholder="Article">
+            <input type="text" id="description" placeholder="Détails">
+            <input type="number" id="quantite" value="1">
+            <input type="number" id="prix" placeholder="Prix Unit.">
         </div>
-        <button class="btn-blue" onclick="ajouterProduit()">+ Ajouter au devis</button>
+        <button class="btn-blue" onclick="ajouterProduit()">+ Ajouter l'article</button>
 
-        <div class="table-responsive">
-            <table id="tableProduits">
-                <thead>
-                    <tr>
-                        <th>Produit</th>
-                        <th>Quantité</th>
-                        <th>Prix Unit.</th>
-                        <th>Total</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+        <table id="tableSaisie">
+            <thead><tr><th>Article</th><th>Détails</th><th>Qté</th><th>Total</th><th>Action</th></tr></thead>
+            <tbody></tbody>
+        </table>
 
-        <h2>Frais & Transport</h2>
+        <h2>Frais</h2>
         <div class="grid">
             <div><label>Commission (%)</label><input type="number" id="commission" value="15"></div>
             <div><label>Inspection (F)</label><input type="number" id="inspection" value="0"></div>
+        </div>
+        
+        <h2>Estimation Transport par avion</h2>
+        <div class="grid">
             <div><label>Kilos Estimatifs</label><input type="number" id="kilos" value="0"></div>
             <div><label>Prix / Kilo (F)</label><input type="number" id="prixKilo" value="0"></div>
         </div>
-
-        <button class="btn-orange" style="margin-top:30px" onclick="genererFacture()">Visualiser et Générer le PDF</button>
+        <button class="btn-orange" onclick="genererDevis()">Visualiser le Devis Final</button>
     </div>
 
-    <!-- ZONE DE LA FACTURE -->
-    <div class="card hidden" id="facture">
-        <div class="facture-header">
-            <div>
-                <h1 style="margin-bottom:5px">DEVIS</h1>
-                <p>N° <span id="vNumero"></span></p>
-                <p>Date: <span id="vDate"></span></p>
+    <!-- ZONE DU DEVIS (PRÊT POUR PDF) -->
+    <div id="preview-area" class="hidden">
+        <div class="card" id="facture">
+            <div class="facture-header">
+                <div>
+                    <h1 style="margin-bottom:5px; color:var(--blue)">DEVIS</h1>
+                    <p>N° <span id="vNum"></span> | Date: <span id="vDate"></span></p>
+                </div>
+                <div style="text-align: right">
+                    <h2 style="color:var(--blue); margin:0">L&C GROUP</h2>
+                    <p style="font-size:0.8rem">Leaders & Creators</p>
+                    <p style="font-size:0.8rem">Brazzaville, Congo</p>
+                </div>
             </div>
-            <div style="text-align: right">
-                <h2 style="color:var(--blue); margin:0">L&C GROUP</h2>
-                <p>Leaders & Creators</p>
-                <p>Brazzaville, Congo</p>
-            </div>
-        </div>
 
-        <div class="grid">
-            <div>
-                <strong>CLIENT</strong>
-                <p id="vClient"></p>
-                <p id="vNumClient"></p>
+            <div class="grid">
+                <div><strong>CLIENT</strong><p id="vClient"></p><p id="vNumClient"></p></div>
+                <div><strong>PROJET</strong><p id="vProjet"></p></div>
+                <div style="text-align: right"><strong>AGENT</strong><p id="vAgent"></p><p id="vNumAgent"></p></div>
             </div>
-            <div>
-                <strong>PROJET</strong>
-                <p id="vProjet"></p>
-            </div>
-            <div style="text-align: right">
-                <strong>AGENT</strong>
-                <p id="vAgent"></p>
-                <p id="vNumAgent"></p>
-            </div>
-        </div>
 
-        <div class="table-responsive">
             <table>
-                <thead>
-                    <tr>
-                        <th>Produit</th>
-                        <th>Description</th>
-                        <th>Qté</th>
-                        <th>Prix Unit.</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody id="factureProduits"></tbody>
+                <thead><tr><th>Article</th><th>Détails</th><th>Qté</th><th>Prix Unit.</th><th>Total</th></tr></thead>
+                <tbody id="vBody"></tbody>
             </table>
-        </div>
 
-        <div class="resume">
-            <div class="row-total"><span>Sous-total Achat :</span><span id="vSousTotal"></span></div>
-            <div class="row-total"><span>Commission Service :</span><span id="vCommission"></span></div>
-            <div class="row-total"><span>Frais Inspection :</span><span id="vInspection"></span></div>
-            <div class="row-total big"><span>TOTAL À PAYER (ACHAT) :</span><span id="vTotalAchat"></span></div>
-        </div>
+            <div class="resume">
+                <div class="row-total"><span>Sous-total Achat :</span><span id="vSousTotal"></span></div>
+                <div class="row-total"><span>Commission Service :</span><span id="vComm"></span></div>
+                <div class="row-total"><span>Frais Inspection :</span><span id="vInsp"></span></div>
+                <div class="row-total big" style="color:var(--orange)"><span>TOTAL À PAYER (ACHAT) :</span><span id="vTotal"></span></div>
+            </div>
 
-        <h2 style="margin-top:30px">Estimation Transport</h2>
-        <div class="resume">
-            <div class="row-total"><span>Poids estimé :</span><span id="vPoids"></span></div>
-            <div class="row-total"><span>Prix au kilo :</span><span id="vPrixKilo"></span></div>
-            <div class="row-total big" style="color:var(--orange)"><span>TOTAL TRANSPORT (À L'ARRIVÉE) :</span><span id="vTotalTransport"></span></div>
-            
-            <!-- AJOUT DU MESSAGE D'INFORMATION TRANSPORT -->
-            <div class="info-box">
-                <strong>💡 INFORMATION IMPORTANTE :</strong><br>
+            <h2 style="margin-top:25px">Estimation Transport</h2>
+            <div class="resume">
+                <div class="row-total"><span>Poids estimé :</span><span id="vPoids"></span></div>
+                <div class="row-total"><span>Prix par kilo :</span><span id="vPrixKilo"></span></div>
+                <div class="row-total big" style="color:var(--orange)"><span>TOTAL TRANSPORT (À L'ARRIVÉE) :</span><span id="vTotalTrans"></span></div>
+                <div class="info-box">  <strong>💡 INFORMATION IMPORTANTE :</strong><br>
                 Le prix du kilo indiqué ci-dessus est <u>estimatif</u>. 
                 Pour notre <strong>tarif standard de 9 500 F / kg</strong>, la durée de livraison est estimée entre <strong>3 à 4 semaines</strong> après expédition.
                 <br>
-                Pour les appareils ayant une batterie, des frais suplementaires pourront etre taxé. Pour toute informations suplementaires, veillez contacter l'agent. 
+                Pour les appareils ayant une batterie, des frais suplementaires pourront etre taxé. Pour toute informations suplementaires, veillez contacter l'agent. </div>
             </div>
+
+            <div class="securisation-message"> <strong>PROTOCOLE DE SÉCURITÉ L&C GROUP :</strong><br>
+            Chaque article est inspecté physiquement par nos agents en Chine avant expédition. En cas de non-conformité, le retour usine est immédiat.</div>
+
+            <!-- SECTION REMERCIEMENT ET WHATSAPP CLIQUABLE -->
+            <div class="thanks-section">
+                <p style="font-size: 1.2rem; color: var(--blue); font-weight: bold;">Merci pour votre confiance !</p>
+                <p>Pour valider ce devis ou pour toute question, contactez-nous directement en cliquant sur le bouton ci-dessous :</p>
+                
+                <a href="#" id="vWaLink" class="whatsapp-btn" color="white" target="_blank">
+                     CLIQUER ICI POUR NOUS CONTACTER
+                </a>
+            </div>
+
+            <p style="text-align:center; margin-top:20px; font-style:italic; font-size:0.7rem; color:gray">Honnêteté • Intégrité • Témérité</p>
         </div>
 
-        <div class="securisation-message">
-            <strong>PROTOCOLE DE SÉCURITÉ L&C GROUP :</strong><br>
-            Chaque article est inspecté physiquement par nos agents en Chine avant expédition. En cas de non-conformité, le retour usine est immédiat.
-        </div>
-
-        <div style="text-align: center; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
-            <p><i>Honnêteté • Intégrité • Témérité</i></p>
-            <button class="btn-orange" id="btnDownload" onclick="telechargerPDF()" style="width:auto; padding: 12px 40px;">Télécharger le PDF officiel</button>
+        <div style="text-align: center; margin-top: 30px; padding-bottom: 50px;" class="no-print">
+            <button class="btn-orange" onclick="window.print()" style="width:auto">GÉNÉRER LE PDF</button>
+            <button onclick="location.reload()" style="background:#666; color:white; padding:15px; border-radius:10px; margin-left:10px;">Modifier les infos</button>
         </div>
     </div>
 </div>
 
 <script>
     let produits = [];
-
-    function format(n) { return Number(n).toLocaleString("fr-FR") + " F"; }
+    const format = (n) => Number(n).toLocaleString("fr-FR") + " F";
 
     function ajouterProduit() {
         const nom = document.getElementById("produit").value;
-        const desc = document.getElementById("description").value;
-        const qte = parseFloat(document.getElementById("quantite").value);
-        const prix = parseFloat(document.getElementById("prix").value);
-
-        if (!nom || !prix) return alert("Nom et Prix requis");
-
-        produits.push({ nom, desc, qte, prix, total: qte * prix });
+        const qte = parseFloat(document.getElementById("quantite").value) || 0;
+        const prix = parseFloat(document.getElementById("prix").value) || 0;
+        if (!nom || !prix) return alert("Veuillez saisir au moins le nom et le prix.");
+        
+        produits.push({ 
+            nom, 
+            desc: document.getElementById("description").value, 
+            qte, 
+            prix, 
+            total: qte * prix 
+        });
+        
         document.getElementById("produit").value = "";
-        document.getElementById("description").value = "";
         document.getElementById("prix").value = "";
-        majTableauSaisie();
+        document.getElementById("quantite").value = "";
+        document.getElementById("description").value = "";
+        majTableau();
     }
 
-    function supprimerProduit(index) {
-        produits.splice(index, 1);
-        majTableauSaisie();
-    }
-
-    function majTableauSaisie() {
-        const tbody = document.querySelector("#tableProduits tbody");
+    function majTableau() {
+        const tbody = document.querySelector("#tableSaisie tbody");
         tbody.innerHTML = produits.map((p, i) => `
             <tr>
                 <td>${p.nom}</td>
+                <td>${p.desc}</td>
                 <td>${p.qte}</td>
-                <td>${format(p.prix)}</td>
                 <td>${format(p.total)}</td>
-                <td><button class="btn-red" onclick="supprimerProduit(${i})">X</button></td>
+                <td><button class="btn-red" onclick="produits.splice(${i},1);majTableau()">X</button></td>
             </tr>
         `).join('');
     }
 
-    function genererFacture() {
-        if (produits.length === 0) return alert("Ajoutez au moins un produit");
-
-        document.getElementById("vProjet").innerText = document.getElementById("projet").value;
-        document.getElementById("vClient").innerText = document.getElementById("client").value;
-        document.getElementById("vNumClient").innerText = document.getElementById("num_client").value;
-        document.getElementById("vAgent").innerText = document.getElementById("agent").value;
-        document.getElementById("vNumAgent").innerText = document.getElementById("num_agent").value;
+    function genererDevis() {
+        if (produits.length === 0) return alert("Veuillez ajouter des articles avant de générer.");
+        
+        // Nettoyage du numéro WhatsApp (enlever les espaces)
+        const numAgent = document.getElementById("num_agent").value.replace(/\s+/g, '');
+        
+        // Remplissage des champs de la facture
+        document.getElementById("vNum").innerText = Math.floor(Math.random() * 9000 + 1000);
         document.getElementById("vDate").innerText = new Date().toLocaleDateString("fr-FR");
-        document.getElementById("vNumero").innerText = "DEV-" + Math.floor(Math.random() * 9000 + 1000);
+        document.getElementById("vClient").innerText = document.getElementById("client").value;
+        document.getElementById("vNumClient").innerText = "+" + document.getElementById("num_client").value;
+        document.getElementById("vProjet").innerText = document.getElementById("projet").value;
+        document.getElementById("vAgent").innerText = document.getElementById("agent").value;
+        document.getElementById("vNumAgent").innerText = "+" + numAgent;
+        
+        // LIEN WHATSAPP DYNAMIQUE
+        document.getElementById("vWaLink").href = `https://wa.me/${numAgent}?text=Bonjour, je souhaite valider mon devis L%26C GROUP.`;
 
-        const sousTotal = produits.reduce((sum, p) => sum + p.total, 0);
-        const comm = sousTotal * (parseFloat(document.getElementById("commission").value) / 100);
-        const insp = parseFloat(document.getElementById("inspection").value);
-        const transport = parseFloat(document.getElementById("kilos").value) * parseFloat(document.getElementById("prixKilo").value);
+        // Calculs financiers
+        const st = produits.reduce((sum, p) => sum + p.total, 0);
+        const comm = st * (parseFloat(document.getElementById("commission").value) / 100);
+        const insp = parseFloat(document.getElementById("inspection").value) || 0;
+        const trans = (parseFloat(document.getElementById("kilos").value) || 0) * (parseFloat(document.getElementById("prixKilo").value) || 0);
 
-        document.getElementById("factureProduits").innerHTML = produits.map(p => `
+        // Affichage des produits
+        document.getElementById("vBody").innerHTML = produits.map(p => `
             <tr>
                 <td><b>${p.nom}</b></td>
                 <td>${p.desc}</td>
@@ -335,40 +281,19 @@
             </tr>
         `).join('');
 
-        document.getElementById("vSousTotal").innerText = format(sousTotal);
-        document.getElementById("vCommission").innerText = format(comm);
-        document.getElementById("vInspection").innerText = format(insp);
-        document.getElementById("vTotalAchat").innerText = format(sousTotal + comm + insp);
-        document.getElementById("vPoids").innerText = document.getElementById("kilos").value + " kg";
-        document.getElementById("vPrixKilo").innerText = format(document.getElementById("prixKilo").value);
-        document.getElementById("vTotalTransport").innerText = format(transport);
+        // Affichage des totaux
+        document.getElementById("vSousTotal").innerText = format(st);
+        document.getElementById("vComm").innerText = format(comm);
+        document.getElementById("vInsp").innerText = format(insp);
+        document.getElementById("vTotal").innerText = format(st + comm + insp);
+        document.getElementById("vPoids").innerText = (document.getElementById("kilos").value || 0) + " kg";
+        document.getElementById("vPrixKilo").innerText = format(document.getElementById("prixKilo").value || 0) + "/kg";
+        document.getElementById("vTotalTrans").innerText = format(trans);
 
-        document.getElementById("facture").classList.remove("hidden");
-        document.getElementById("facture").scrollIntoView({ behavior: 'smooth' });
-    }
-
-    async function telechargerPDF() {
-        const btn = document.getElementById("btnDownload");
-        const facture = document.getElementById("facture");
-        btn.style.display = "none";
-        facture.classList.add("pdf-mode");
-
-        try {
-            const canvas = await html2canvas(facture, { scale: 2, useCORS: true, windowWidth: 800 });
-            const imgData = canvas.toDataURL("image/jpeg", 0.98);
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`Devis_LC_GROUP.pdf`);
-        } catch (e) {
-            alert("Erreur génération PDF");
-        } finally {
-            facture.classList.remove("pdf-mode");
-            btn.style.display = "inline-block";
-        }
+        // Switch d'affichage
+        document.getElementById("form-container").classList.add("hidden");
+        document.getElementById("preview-area").classList.remove("hidden");
+        window.scrollTo(0,0);
     }
 </script>
 
